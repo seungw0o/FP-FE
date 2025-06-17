@@ -9,10 +9,13 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "useDefineForClassFields": true,
+    "allowImportingTsExtensions": true,
+    "moduleDetection": "force",
 
     "jsx": "react-jsx",
     "baseUrl": ".",
@@ -21,7 +24,13 @@
       "@/*": ["./src/*"]
     },
     "typeRoots": ["node_modules/@types", "src/@types"],
-    "outDir": "build"
+    "outDir": "build",
+
+    /* Strict Type Checking */
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "build"]
 }

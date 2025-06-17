@@ -7,7 +7,7 @@ interface User {
   email: string;
 }
 
-export const UserList = () => {
+export function UserList() {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
@@ -28,4 +28,4 @@ export const UserList = () => {
       ))}
     </div>
   );
-};
+}

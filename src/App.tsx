@@ -1,18 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import axios from "axios";
 
+interface User {
+  name: string;
+  age: number;
+  email: string;
+  _id: string;
+}
+
 export const App = () => {
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [email, setEmail] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [userList, setUserList] = useState<boolean>(false);
+  const [shouldFetchUsers, setShouldFetchUsers] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (shouldFetchUsers) {
+      axios
+        .get("http://localhost:4000/api/users")
+        .then((res) => {
+          setUsers(res.data);
+          setUserList(true);
+          setShouldFetchUsers(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setShouldFetchUsers(false);
+        });
+    }
+  }, [shouldFetchUsers]);
 
   const onSubmit = () => {
-    console.log(name, age, email);
     axios
-      .post("http://localhost:4000/api/users/fake", { name, age, email })
+      .post("http://localhost:4000/api/users/fake")
       .then((res) => {
         console.log(res);
+        setShouldFetchUsers(true);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const onUser = () => {
+    setUserList(!userList);
+  };
+
+  const onDelete = (id: string) => {
+    axios
+      .delete(`http://localhost:4000/api/users/${id}`)
+      .then((res) => {
+        console.log(res);
+        setShouldFetchUsers(true);
       })
       .catch((err) => {
         console.log(err);
@@ -22,29 +61,27 @@ export const App = () => {
   return (
     <Div>
       <Container>
-        <Input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="name"
-        />
-        <Input
-          type="text"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-          placeholder="age"
-        />
-        <Input
-          type="text"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="email"
-        />
-        <Button onClick={onSubmit}>Submit</Button>
+        <Button onClick={onSubmit}>make random data</Button>
+        <Button onClick={onUser}>view userList</Button>
       </Container>
+
+      {userList &&
+        users.map((user) => (
+          <ContainerUserList key={user._id}>
+            <p>{user.name}</p>
+            <p>{user.age}</p>
+            <p>{user.email}</p>
+            <P onClick={() => onDelete(user._id)}>Delete</P>
+          </ContainerUserList>
+        ))}
     </Div>
   );
 };
+
+const ContainerUserList = styled.div`
+  display: flex;
+  gap: 2rem;
+`;
 
 const Div = styled.div`
   display: flex;
@@ -71,8 +108,7 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const Input = styled.input`
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+const P = styled.p`
+  cursor: pointer;
+  color: red;
 `;
